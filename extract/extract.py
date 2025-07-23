@@ -20,7 +20,7 @@ def fetch_all_endpoints(base_url, max_records=100):
     all_data = []
     page = 1
 
-    while len(all_data) < max_records:
+    while len(all_data) <= max_records:
         print(f"Coletando página {page}...")
 
         response = rq.get(f"{base_url}?page={page}")

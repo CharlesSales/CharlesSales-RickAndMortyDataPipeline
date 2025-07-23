@@ -1,11 +1,14 @@
 import pandas as pd
+import re
 
-def transform_characters(row_characters):
-    characters = row_characters
+def transform_characters(raw_characters):
+    """
+    Transforma a lista de personagens em um DataFrame com colunas normalizadas:
+    nome, status, espécie, gênero, origem, localização e número de episódios.
+    """
     df = []
     
-    for personagem in characters:
-        # Personagens: nome, status, espécie, gênero, origem, localização atual, episódios
+    for personagem in raw_characters:
         df.append({
             'id': personagem['id'],
             'nome': personagem['name'],
@@ -21,30 +24,39 @@ def transform_characters(row_characters):
     #print(f'Personagens: \n{data.head(3)}')
     return data
 
-def transform_episodes(row_episodes):
-   episodes  = row_episodes
-   df = []
+def transform_episodes(raw_episodes):
+    '''
+    Transforma a lista de episodios em um DataFrame com colunas normalizadas:
+    nome, data_de_exibicao, temporada_episodio, personagens_envolvidos.
+    '''
+    df = []
 
-   for e in episodes:
-       # Episódios: nome, data de exibição, personagens envolvidos
+    for e in raw_episodes:
+
+       # Filtrando Ids dos personagens
+       ids = [int(re.search(r'/character/(\d+)', url).group(1)) for url in e['characters']]
+
        df.append({
             'nome': e['name'],
             'data_de_exibicao': e['air_date'],
-            'info': e['episode'],
-            'personagens_envolvidos': e['characters']
+            'temporada_episodio': e['episode'],
+            'personagens_envolvidos': ids
         })
-       
-   data = pd.DataFrame(df)
-   return data
+   
+    data = pd.DataFrame(df)
+    data[['Temporada', 'Episodio']] = data['info'].str.extract(r'S(\d+)E(\d+)').astype(int)
+    return data
    
    
        
-def transform_locations(row_locations):
-   locations  = row_locations
+def transform_locations(raw_locations):
+   '''
+   Transforma a lista de episodios em um DataFrame com colunas normalizadas:
+    nome, tipo, dimensão, número de residentes.
+   '''
    df = []
-   
-   for l in locations:
-       # Localizações: nome, tipo, dimensão, número de residentes
+
+   for l in raw_locations:
        df.append({
             'nome': l['name'],
             'tipo': l['type'],
@@ -54,7 +66,4 @@ def transform_locations(row_locations):
        
    data = pd.DataFrame(df)
    return data
-       
-
-   
    

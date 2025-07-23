@@ -10,7 +10,7 @@ def save_as_parquet(df, filename):
     except Exception as e:
         print(f'Falha ao salvar {filename} em parquet: {e}')
 
-def save_as_db(db_key, df, filename):
+def save_to_database(db_key, df, filename):
     try:
         engine = create_engine(db_key)
         df.to_sql(filename, con=engine, if_exists='replace', index=False)
